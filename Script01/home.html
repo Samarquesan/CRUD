@@ -1,12 +1,82 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Crud Web</title>
 </head>
 <body>
-    <
+    <form action="">
+        <input type="text" name="criaPost" id="icriaPost" placeholder="Digite seu post">
+        <input type="submit" value="Postar">
+    </form>
+    <ul class="postList">
+
+    </ul>
+    <script>
+        console.log('Olá pessoas! - Nível 2');
+        console.log('#Construindo CRUDS');
+        //Data Base
+        //Modelo
+        const miniSocialMedia = {
+            usuario: [
+                {
+                    username: 'Samsimic',
+                }
+            ],
+            posts: [
+                {
+                    id: 1,
+                    owner: 'Samsimic',
+                    content: 'Meu primeiro tweet'
+                }
+            ],
+            createPost(dados, htmlOnly = false){
+                if(!htmlOnly){
+                //Cria Posts na memória(Array/ Object)
+                    miniSocialMedia.posts.push({
+                        id: miniSocialMedia.posts.lenght + 1,
+                        owner: dados.owner,
+                        content: dados.content
+                    });
+                }       
+                //Cria Posts no HTML
+                const $postList = document.querySelector('.postList');
+            $postList.insertAdjacentHTML('afterbegin', `<li>${dados.content}</li>`)
+            //$createPostField.value = '';
+            }
+        };
+
+        
+        console.log(miniSocialMedia.posts)
+        
+        // [Código Front-End: Web]
+
+        const $myForm = document.querySelector('form');
+        console.log($myForm);
+
+        //CRUD [READ]
+        miniSocialMedia.posts.forEach(({owner, content}) => {
+            miniSocialMedia.createPost({owner: 'Samsimic', content: content}, true);
+        })
+        //CRUD [CREATE]
+        $myForm.addEventListener('submit', function createPostCrontroller(eventInfos) {
+            eventInfos.preventDefault();
+            console.log('Estamos criando um post novo!');
+            const $createPostField = document.querySelector('input[name= "criaPost"]');
+
+            miniSocialMedia.createPost({owner: 'Samsimic', content: $createPostField.value});
+            
+            $createPostField.value = '';
+            //alert($createPostField.value);
+            //console.log();
+            
+        });
+        // Linguagem Pura:
+        // - Cria variáveis
+        // - Sincronizar o conteído das variáveis com o HTML
+        // -Atualiza variáveis
+    </script>
     
 </body>
 </html>
