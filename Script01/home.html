@@ -26,25 +26,57 @@
             ],
             posts: [
                 {
-                    id: 1,
+                    id: Date.now(),
                     owner: 'Samsimic',
                     content: 'Meu primeiro tweet'
                 }
             ],
+            readPosts(){
+                    miniSocialMedia.posts.forEach(({id, owner, content}) => {
+                miniSocialMedia.createPost({id, owner: 'Samsimic', content: content}, true);
+                })
+            },
             createPost(dados, htmlOnly = false){
+                const internIdHere = Date.now();
                 if(!htmlOnly){
                 //Cria Posts na memória(Array/ Object)
                     miniSocialMedia.posts.push({
-                        id: miniSocialMedia.posts.lenght + 1,
+                        id: dados.id || internIdHere,
                         owner: dados.owner,
                         content: dados.content
                     });
                 }       
                 //Cria Posts no HTML
                 const $postList = document.querySelector('.postList');
-            $postList.insertAdjacentHTML('afterbegin', `<li>${dados.content}</li>`)
+                $postList.insertAdjacentHTML('afterbegin', 
+                    `<li data-id="${internIdHere}">
+                        <button class="btn-delete">Delete</button>
+                        <span contenteditable>
+                            ${dados.content}
+                            </span>
+                    </li>
+                `);
             //$createPostField.value = '';
-            }
+            },
+               
+                 deletePost(id){
+                    const newPostList = miniSocialMedia.posts.filter
+                    //console.log(postAtual.id, id, postAtual.id !== id);
+                    ((postAtual) => {
+                        return postAtual.id !== Number(id);
+                    })
+                    console.log(newPostList);
+                    miniSocialMedia.posts = newPostList;
+                
+                },
+                updateContentPost(id, novoConteudo){
+                    const updatedPost = miniSocialMedia.posts.find((post) => {
+                        return post.id === Number(id);
+                });
+                console.log(updatedPost) //[{ id: 1, owner: 'Samsimic', content: 'Meu primeiro tweet'}]
+                updatedPost.content = novoConteudo
+            } 
+                
         };
 
         
@@ -56,9 +88,7 @@
         console.log($myForm);
 
         //CRUD [READ]
-        miniSocialMedia.posts.forEach(({owner, content}) => {
-            miniSocialMedia.createPost({owner: 'Samsimic', content: content}, true);
-        })
+        miniSocialMedia.readPosts();
         //CRUD [CREATE]
         $myForm.addEventListener('submit', function createPostCrontroller(eventInfos) {
             eventInfos.preventDefault();
@@ -68,10 +98,38 @@
             miniSocialMedia.createPost({owner: 'Samsimic', content: $createPostField.value});
             
             $createPostField.value = '';
-            //alert($createPostField.value);
-            //console.log();
-            
+
+            // CRUD: [DELETE]
+            document.querySelector('.postList').addEventListener('click', function(eventInfos){
+                console.log('Houve um click!');
+                const actuallyElement = eventInfos.target;
+                const isBtnDeleteClick = eventInfos.target.classList.contains('btn-delete')
+                if(isBtnDeleteClick){
+                    const id = actuallyElement.parentNode.getAttribute('data-id');
+                    console.log('Clicou no botão de apagar', actuallyElement.parentNode.getAttribute('data-id'));
+
+                    //Manipula o ladao ServerSide/Banco de Dados/Arquivo/Fonte!
+                    miniSocialMedia.deletePost(id);
+                    //Manipula a View/ o Outout ....
+                    actuallyElement.parentNode.remove(miniSocialMedia.posts);
+
+                    console.log(miniSocialMedia.posts);
+                }
+            } )
+    
         });
+
+        // CRUD: [UPDATE]
+        document.querySelector('.postList').addEventListener('input', function(eventInfos){
+            console.log('Houve uma alteração!');
+            const actuallyElement = eventInfos.target;
+            const id = actuallyElement.parentNode.getAttribute('data-id');
+            
+            miniSocialMedia.updateContentPost(id, actuallyElement.innerHTML);
+        });
+
+        //alert($createPostField.value);
+        //console.log();    
         // Linguagem Pura:
         // - Cria variáveis
         // - Sincronizar o conteído das variáveis com o HTML
